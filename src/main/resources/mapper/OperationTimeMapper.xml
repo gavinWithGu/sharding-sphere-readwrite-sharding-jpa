@@ -1,0 +1,43 @@
+<?xml version="1.0" encoding="UTF-8"?>
+<!DOCTYPE mapper PUBLIC "-//mybatis.org//DTD Mapper 3.0//EN" "http://mybatis.org/dtd/mybatis-3-mapper.dtd">
+<mapper namespace="com.gavin.poc.sharding.sphere.jdbc.demo.mapper.OperationTimeMapper">
+
+    <!-- 通用查询映射结果 -->
+    <resultMap id="BaseResultMap" type="com.gavin.poc.sharding.sphere.jdbc.demo.domain.entity.OperationTime">
+        <id column="id" property="id" />
+        <result column="count" property="count" />
+        <result column="expansion_valve" property="expansionValve" />
+        <result column="created_at" property="createdAt" />
+        <result column="thing_id" property="thingId" />
+        <result column="unit_id" property="unitId" />
+    </resultMap>
+
+	<resultMap id="specialFormResultGetmap" type="java.util.Map">
+        <result property="id" column="id"/>
+        <result property="count" column="count"/>
+        <result property="expansionValve" column="expansion_valve"/>
+        <result property="createdAt" column="created_at"/>
+        <result property="thingId" column="thing_id"/>
+        <result property="unitId" column="unit_id"/>
+	</resultMap>
+
+    <!-- 通用查询结果列 -->
+    <sql id="Base_Column_List">
+        id, count, expansion_valve, created_at, thing_id, unit_id
+    </sql>
+    
+	<select id="selectByParams" parameterType="java.util.Map" resultMap="specialFormResultGetmap">
+			SELECT COUNT(`operationt0_` . `unit_id`) AS `unit_id_count`, 
+			`operationt0_` . `thing_id` AS `thing_id`, 
+			`operationt0_` . `unit_id` AS `unit_id` 
+			FROM `operation_time` `operationt0_` 
+			WHERE `operationt0_` . `thing_id` = #{thingId}
+			AND ( `operationt0_` . `created_at` BETWEEN #{startDate} AND #{endDate} ) 
+			AND `operationt0_` . `power` = #{power}
+			GROUP BY `operationt0_` . `thing_id` , `operationt0_` . `unit_id`
+	</select>
+	
+	<select id="selectByThingId" parameterType="java.util.Map" resultMap="BaseResultMap">
+			SELECT * FROM `operation_time` `operationt0_` WHERE `operationt0_` . `thing_id` = #{thingId}
+	</select>
+</mapper>
